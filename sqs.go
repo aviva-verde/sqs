@@ -12,6 +12,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
+type SendFunc func(ctx context.Context, v any) (err error)
+type SendBatchFunc func(ctx context.Context, v []any) (err error)
+
 // NewSender creates a Sender using the default configuration.
 func NewSender(ctx context.Context, queueURL string) (s Sender, err error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
