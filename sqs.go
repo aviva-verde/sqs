@@ -12,21 +12,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
-type SendFunc func(ctx context.Context, v any) (err error)
-type SendBatchFunc func(ctx context.Context, v []any) (err error)
-
 // NewSender creates a Sender using the default configuration.
-func NewSender(ctx context.Context, queueURL string) (s Sender, err error) {
+func NewSender[T any](ctx context.Context, queueURL string) (s Sender[T], err error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return
 	}
-	return NewSenderFromConfig(cfg, queueURL)
+	return NewSenderFromConfig[T](cfg, queueURL)
 }
 
 // NewSenderFromConfig creates a Sender using the provided configuration.
-func NewSenderFromConfig(cfg aws.Config, queueURL string, optFns ...func(*sqs.Options)) (s Sender, err error) {
-	s = Sender{
+func NewSenderFromConfig[T any](cfg aws.Config, queueURL string, optFns ...func(*sqs.Options)) (s Sender[T], err error) {
+	s = Sender[T]{
 		client:   sqs.NewFromConfig(cfg, optFns...),
 		queueURL: queueURL,
 	}
@@ -34,13 +31,13 @@ func NewSenderFromConfig(cfg aws.Config, queueURL string, optFns ...func(*sqs.Op
 }
 
 // Sender sends messages to SQS in JSON format.
-type Sender struct {
+type Sender[T any] struct {
 	client   *sqs.Client
 	queueURL string
 }
 
 // Send a message to SQS.
-func (s Sender) Send(ctx context.Context, v any) (err error) {
+func (s Sender[T]) Send(ctx context.Context, v T) (err error) {
 	jsonValue, err := json.Marshal(v)
 	if err != nil {
 		return
@@ -54,7 +51,7 @@ func (s Sender) Send(ctx context.Context, v any) (err error) {
 }
 
 // SendBatch sends a batch of messages to SQS.
-func (s Sender) SendBatch(ctx context.Context, v []any) (err error) {
+func (s Sender[T]) SendBatch(ctx context.Context, v []T) (err error) {
 	if len(v) == 0 {
 		return nil
 	}
