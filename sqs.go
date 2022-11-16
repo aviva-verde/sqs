@@ -18,16 +18,15 @@ func NewSender[T any](ctx context.Context, queueURL string) (s Sender[T], err er
 	if err != nil {
 		return
 	}
-	return NewSenderFromConfig[T](cfg, queueURL)
+	return NewSenderFromConfig[T](cfg, queueURL), nil
 }
 
 // NewSenderFromConfig creates a Sender using the provided configuration.
-func NewSenderFromConfig[T any](cfg aws.Config, queueURL string, optFns ...func(*sqs.Options)) (s Sender[T], err error) {
-	s = Sender[T]{
+func NewSenderFromConfig[T any](cfg aws.Config, queueURL string, optFns ...func(*sqs.Options)) Sender[T] {
+	return Sender[T]{
 		client:   sqs.NewFromConfig(cfg, optFns...),
 		queueURL: queueURL,
 	}
-	return
 }
 
 // Sender sends messages to SQS in JSON format.
