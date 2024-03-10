@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "ignoreDeps": [
+    "github.com/a-h/templ"
+  ],
+  "gomodTidy": true,
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "automerge": true,
+      "schedule": [
+        "every weekend"
+      ]
+    },
+    {
+      "matchPackagePatterns": [
+        "^github.com/aviva-verde"
+      ],
+      "groupName": "all internal dependencies",
+      "groupSlug": "all-internal",
+      "automerge": true,
+      "schedule": [
+        "after 10pm every weekday",
+        "before 5am every weekday",
+        "every weekend"
+      ]
+    }
+  ]
+}
